@@ -20,15 +20,14 @@ app.post("/api/v1/user", (req, res) => {
             res.status(200).send({
                 status: 200,
                 message: "New user Added",
+                data: res.send(newUser),
             });
         })
         .catch((err) => {
-            {
-                res.status(400).send({
-                    status: 400,
-                    message: `${err}`,
-                });
-            }
+            res.status(400).send({
+                status: 400,
+                message: `${err}`,
+            });
         });
 });
 
