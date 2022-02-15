@@ -9,10 +9,15 @@ require("./src/db/mongoose");
 app.use(express.json());
 
 app.get("/api/v1/user", (req, res) => {
-    res.status(400).send({
-        status: 200,
-        message: "Users List requested",
-    });
+    User.find()
+        .then((result) => {
+            res.send({
+                status: 200,
+
+                data: result,
+            });
+        })
+        .catch((err) => res.send(err));
 });
 
 app.post("/api/v1/user", (req, res) => {
