@@ -8,8 +8,9 @@ require("./src/db/mongoose");
 
 app.use(express.json());
 
+// Get all users
 app.get("/api/v1/user", (req, res) => {
-    User.find()
+    User.find({})
         .then((result) => {
             res.send({
                 status: 200,
@@ -20,6 +21,7 @@ app.get("/api/v1/user", (req, res) => {
         .catch((err) => res.send(err));
 });
 
+// Create a user
 app.post("/api/v1/user", (req, res) => {
     const newUser = new User(req.body);
     newUser
@@ -39,20 +41,32 @@ app.post("/api/v1/user", (req, res) => {
         });
 });
 
-app.get("/api/v1/task", (req, res) => {
-    const allTask = Task.find({}, function (err, result) {
-        if (err) {
-            return err;
-        } else {
-            return result;
-        }
-    });
-    res.status(200).send({
-        status: 200,
-        message: allTask,
-    });
+app.get("/api/v1/user/:uname", (req, res) => {
+    let { uname } = req.params;
+    User.find({ name: uname })
+        .then((result) => {
+            res.send({
+                status: 200,
+
+                data: result,
+            });
+        })
+        .catch((err) => res.send(err));
 });
 
+// Get All Tasks
+app.get("/api/v1/task", (req, res) => {
+    Task.find({})
+        .then((result) => {
+            res.send({
+                status: 200,
+                data: result,
+            });
+        })
+        .catch((err) => res.send(err));
+});
+
+// Create a Task
 app.post("/api/v1/task", (req, res) => {
     const newTask = new Task(req.body);
     newTask
@@ -72,6 +86,7 @@ app.post("/api/v1/task", (req, res) => {
         });
 });
 
+// Route for all invalid requests
 app.get("*", (req, res) => {
     res.status(400).send({
         status: 400,
