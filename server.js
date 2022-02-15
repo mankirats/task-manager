@@ -41,6 +41,7 @@ app.post("/api/v1/user", (req, res) => {
         });
 });
 
+// Get user using name
 app.get("/api/v1/user/:uname", (req, res) => {
     let { uname } = req.params;
     User.find({ name: uname })
@@ -60,6 +61,19 @@ app.get("/api/v1/task", (req, res) => {
         .then((result) => {
             res.send({
                 status: 200,
+                data: result,
+            });
+        })
+        .catch((err) => res.send(err));
+});
+
+app.get("/api/v1/task/:tname", (req, res) => {
+    let { tname } = req.params;
+    Task.find({ description: tname })
+        .then((result) => {
+            res.send({
+                status: 200,
+
                 data: result,
             });
         })
