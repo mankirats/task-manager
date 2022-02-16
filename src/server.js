@@ -1,10 +1,10 @@
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 5000;
-const User = require("./src/models/user.js");
-const Task = require("./src/models/task");
+const User = require("./models/user.js");
+const Task = require("./models/task");
 const res = require("express/lib/response");
-require("./src/db/mongoose");
+require("./db/mongoose");
 
 app.use(express.json());
 
@@ -15,6 +15,22 @@ app.get("/api/v1/user", (req, res) => {
             res.send({
                 status: 200,
 
+                data: result,
+            });
+        })
+        .catch((err) => res.send(err));
+});
+
+// Get user using name
+app.get("/api/v1/user/:queryParam", (req, res) => {
+    let { queryParam } = req.params;
+    let query = new RegExp(`.*${queryParam}.*`, "i");
+    User.find({
+        $or: [{ name: query }, { password: query }],
+    })
+        .then((result) => {
+            res.send({
+                status: 200,
                 data: result,
             });
         })
@@ -41,20 +57,6 @@ app.post("/api/v1/user", (req, res) => {
         });
 });
 
-// Get user using name
-app.get("/api/v1/user/:uname", (req, res) => {
-    let { uname } = req.params;
-    User.find({ name: uname })
-        .then((result) => {
-            res.send({
-                status: 200,
-
-                data: result,
-            });
-        })
-        .catch((err) => res.send(err));
-});
-
 // Get All Tasks
 app.get("/api/v1/task", (req, res) => {
     Task.find({})
@@ -69,11 +71,11 @@ app.get("/api/v1/task", (req, res) => {
 
 app.get("/api/v1/task/:tname", (req, res) => {
     let { tname } = req.params;
-    Task.find({ description: tname })
+    let query = { $regex: new RegExp(tname), $options: "i" };
+    Task.find({ description: query })
         .then((result) => {
             res.send({
                 status: 200,
-
                 data: result,
             });
         })
