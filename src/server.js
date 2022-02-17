@@ -10,18 +10,18 @@ app.use(express.json());
 
 // Get all users
 app.get("/api/v1/user", (req, res) => {
-    let res = {};
+    const result = {};
     User.find({})
-        .then((result) => {
-            res.all = result;
+        .then((result1) => {
+            result.all = result1;
             return User.countDocuments({});
         })
-        .then((result1) => {
-            res.count = result1;
+        .then((result2) => {
+            result.count = result2;
             res.send({
                 status: 200,
-                data: res.all,
-                total_users: res.count,
+                data: result.all,
+                total_users: result.count,
             });
         })
         .catch((err) => res.send(err));
