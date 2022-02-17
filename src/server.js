@@ -87,11 +87,15 @@ app.post("/api/v1/task", (req, res) => {
     const newTask = new Task(req.body);
     newTask
         .save()
-        .then(() => {
+        .then((newTask) => {
+            return Task.countDocuments({ completed: false });
+        })
+        .then((result) => {
             res.status(201).send({
                 status: 201,
                 message: "Task created successfully",
                 data: newTask,
+                pending_tasks: result,
             });
         })
         .catch((e) => {
