@@ -10,7 +10,7 @@ app.use(express.json());
 
 // Get all users
 app.get("/api/v1/user", (req, res) => {
-    res = {};
+    let res = {};
     User.find({})
         .then((result) => {
             res.all = result;
