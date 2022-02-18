@@ -9,22 +9,25 @@ require("./db/mongoose");
 app.use(express.json());
 
 // Get all users
-app.get("/api/v1/user", (req, res) => {
-    const result = {};
-    User.find({})
-        .then((result1) => {
-            result.all = result1;
-            return User.countDocuments({});
-        })
-        .then((result2) => {
-            result.count = result2;
-            res.send({
-                status: 200,
-                total_users: result.count,
-                data: result.all,
-            });
-        })
-        .catch((err) => res.send(err));
+const listAndCountUsers = async () => {
+    const allUsers = await User.find({}).catch((e) =>
+        console.log("Error: ", e.message)
+    );
+    const totalUsers = await User.countDocuments({}).catch((e) =>
+        console.log("Error: ", e.message)
+    );
+    return { allUsers, totalUsers };
+};
+
+app.get("/api/v1/user", async (req, res) => {
+    // const result = {};
+    await listAndCountUsers().then((result) => {
+        res.status(200).send({
+            status: 200,
+            total_users: result["totalUsers"],
+            list_of_users: result["allUsers"],
+        });
+    });
 });
 
 // Get user using name
