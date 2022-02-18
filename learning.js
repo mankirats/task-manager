@@ -10,7 +10,7 @@
 // console.log("y");
 
 const getData = async () => {
-    var y = "Hello World";
+    var y = await "Hello World";
     console.log(y);
 };
 
