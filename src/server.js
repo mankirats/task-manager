@@ -20,8 +20,8 @@ app.get("/api/v1/user", (req, res) => {
             result.count = result2;
             res.send({
                 status: 200,
-                data: result.all,
                 total_users: result.count,
+                data: result.all,
             });
         })
         .catch((err) => res.send(err));
