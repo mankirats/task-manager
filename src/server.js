@@ -11,12 +11,10 @@ app.use(express.json());
 // Get all users
 const listAndCount = async (collection) => {
     // throw new Error("mklmkl");
-    const allUsers = await collection
-        .find({})
-        .catch((e) => console.log("Error: ", e.message));
-    const totalUsers = await collection
-        .countDocuments({})
-        .catch((e) => console.log("Error: ", e.message));
+    const allUsers = await collection.find({});
+
+    const totalUsers = await collection.countDocuments({});
+
     return (result = { allUsers, totalUsers });
 };
 
@@ -61,12 +59,11 @@ app.get("/api/v1/user/:queryParam", async (req, res) => {
 app.post("/api/v1/user", async (req, res) => {
     const newUser = new User(req.body);
     try {
-        await newUser.save().then(() => {
-            res.status(201).send({
-                status: 201,
-                message: "New user Added",
-                data: newUser,
-            });
+        const result = await newUser.save();
+        res.status(201).send({
+            status: 201,
+            message: "New user Added",
+            data: result,
         });
     } catch (e) {
         res.status(400).send({
@@ -78,12 +75,11 @@ app.post("/api/v1/user", async (req, res) => {
 
 // Get All Tasks
 app.get("/api/v1/task", async (req, res) => {
-    await listAndCount(Task).then((result) => {
-        res.status(200).send({
-            status: 200,
-            total_users: result["totalUsers"],
-            list_of_users: result["allUsers"],
-        });
+    const result = await listAndCount(Task);
+    res.status(200).send({
+        status: 200,
+        total_tasks: result["totalUsers"],
+        list_of_tasks: result["allUsers"],
     });
 });
 
