@@ -17,24 +17,22 @@ const listAndCount = async (collection) => {
     const totalUsers = await collection
         .countDocuments({})
         .catch((e) => console.log("Error: ", e.message));
-    return { allUsers, totalUsers };
+    return (result = { allUsers, totalUsers });
 };
 
 app.get("/api/v1/user", async (req, res) => {
     try {
-        await listAndCount(User).then((result) => {
-            res.status(200).send({
-                status: 200,
-                total_users: result["totalUsers"],
-                list_of_users: result["allUsers"],
-            });
+        await listAndCount(User);
+        res.status(200).send({
+            status: 200,
+            total_users: result["totalUsers"],
+            list_of_users: result["allUsers"],
         });
-    } catch (e) {
+    } catch (err) {
         res.status(400).send({
             status: 400,
-            // message: message.e,
+            message: err,
         });
-        console.log(e);
     }
 });
 
@@ -48,11 +46,11 @@ app.get("/api/v1/user/:queryParam", async (req, res) => {
     });
 
     try {
-        await getUser.then((result) => {
-            res.send({
-                status: 200,
-                data: result,
-            });
+        const result = await getUser;
+        res.status(200).send({
+            status: 200,
+            no_of_results: result.length,
+            data: result,
         });
     } catch (err) {
         res.send(err);
