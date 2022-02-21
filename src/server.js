@@ -90,27 +90,26 @@ app.get("/api/v1/task", async (req, res) => {
 app.get("/api/v1/task/:tname", async (req, res) => {
     let { tname } = req.params;
     let query = { $regex: new RegExp(tname), $options: "i" };
-    await Task.find({ description: query })
-        .then((result) => {
-            res.send({
-                status: 200,
-                data: result,
-            });
-        })
-        .catch((err) => res.send(err));
+    try {
+        let result = await Task.find({ description: query });
+        res.status.send({
+            status: 200,
+            data: result,
+        });
+    } catch (err) {
+        res.status(400).send({ status: 400, message: err });
+    }
 });
 
 // Create a Task
 app.post("/api/v1/task", async (req, res) => {
     const newTask = new Task(req.body);
-    const saveTask = await newTask.save();
     try {
-        saveTask.then((newTask) => {
-            res.status(201).send({
-                status: 201,
-                message: "Task created successfully",
-                data: newTask,
-            });
+        const result = await newTask.save();
+        res.status(201).send({
+            status: 201,
+            message: "Task created successfully",
+            data: result,
         });
     } catch (e) {
         res.status(400).send({
