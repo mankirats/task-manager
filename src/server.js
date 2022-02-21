@@ -4,6 +4,7 @@ const port = process.env.PORT || 5000;
 const User = require("./models/user.js");
 const Task = require("./models/task");
 const res = require("express/lib/response");
+const { response } = require("express");
 require("./db/mongoose");
 
 app.use(express.json());
@@ -37,10 +38,10 @@ app.get("/api/v1/user", async (req, res) => {
 // Get user using name
 app.get("/api/v1/user/:queryParam", async (req, res) => {
     let { queryParam } = req.params;
-    let query = new RegExp(`.*${queryParam}.*`, "i");
-
+    let queryName = new RegExp(`.*${queryParam}.*`, "i");
+    let queryAge = isNaN(parseInt(queryParam)) ? 0 : parseInt(queryParam);
     const getUser = User.find({
-        $or: [{ name: query }, { password: query }],
+        $or: [{ name: queryName }, { age: queryAge }],
     });
 
     try {
@@ -51,7 +52,10 @@ app.get("/api/v1/user/:queryParam", async (req, res) => {
             data: result,
         });
     } catch (err) {
-        res.send(err);
+        res.status(400).send({
+            status: 400,
+            message: err,
+        });
     }
 });
 

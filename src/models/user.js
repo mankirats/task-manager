@@ -7,6 +7,7 @@ const User = mongoose.model("User", {
     },
     age: {
         type: Number,
+        default: null,
     },
     password: {
         type: String,
