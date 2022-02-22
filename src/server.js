@@ -173,6 +173,50 @@ app.patch("/api/v1/task/:id", async (req, res) => {
     }
 });
 
+// Delete User
+app.delete("/api/v1/user/:id", async (req, res) => {
+    try {
+        const updateUser = await User.findByIdAndDelete(req.params.id);
+        if (!updateUser) {
+            return res.status(400).send({
+                status: 400,
+                data: "invalid user id",
+            });
+        }
+        res.status(200).send({
+            status: 200,
+            data: updateUser,
+        });
+    } catch (err) {
+        res.status(400).send({
+            status: 400,
+            data: err,
+        });
+    }
+});
+
+// Delete Task
+app.delete("/api/v1/Task/:id", async (req, res) => {
+    try {
+        const updateTask = await Task.findByIdAndDelete(req.params.id);
+        if (!updateTask) {
+            return res.status(400).send({
+                status: 400,
+                data: "invalid task id",
+            });
+        }
+        res.status(200).send({
+            status: 200,
+            data: updateTask,
+        });
+    } catch (err) {
+        res.status(400).send({
+            status: 400,
+            data: err,
+        });
+    }
+});
+
 // Route for all invalid requests
 app.get("*", (req, res) => {
     res.status(400).send({
