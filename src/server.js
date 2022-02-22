@@ -119,6 +119,60 @@ app.post("/api/v1/task", async (req, res) => {
     }
 });
 
+// Update users using name
+app.patch("/api/v1/user/:id", async (req, res) => {
+    const objId = req.params.id;
+    try {
+        const updateUser = await User.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        );
+        if (!updateUser) {
+            return res.status(400).send({
+                status: 400,
+                data: "invalid user id",
+            });
+        }
+        res.status(200).send({
+            status: 200,
+            data: updateUser,
+        });
+    } catch (err) {
+        res.status(400).send({
+            status: 400,
+            data: err,
+        });
+    }
+});
+
+// Update users using name
+app.patch("/api/v1/task/:id", async (req, res) => {
+    const objId = req.params.id;
+    try {
+        const updateTask = await Task.findByIdAndUpdate(
+            { _id: req.params.id },
+            req.body,
+            { new: true, runValidators: true }
+        );
+        if (!updateTask) {
+            return res.status(400).send({
+                status: 400,
+                message: "invalid Task id",
+            });
+        }
+        res.status(200).send({
+            status: 200,
+            data: updateTask,
+        });
+    } catch (err) {
+        res.status(400).send({
+            status: 400,
+            message: err,
+        });
+    }
+});
+
 // Route for all invalid requests
 app.get("*", (req, res) => {
     res.status(400).send({
