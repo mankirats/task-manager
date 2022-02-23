@@ -2,6 +2,16 @@ const express = require("express");
 const router = new express.Router();
 const Task = require("../models/task");
 
+// Get all users
+const listAndCount = async (collection) => {
+    // throw new Error("mklmkl");
+    const allUsers = await collection.find({});
+
+    const totalUsers = await collection.countDocuments({});
+
+    return (result = { allUsers, totalUsers });
+};
+
 // Get All Tasks
 router.get("/api/v1/task", async (req, res) => {
     const result = await listAndCount(Task);
