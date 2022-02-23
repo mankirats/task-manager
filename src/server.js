@@ -5,8 +5,8 @@ const User = require("./models/user.js");
 const Task = require("./models/task");
 const res = require("express/lib/response");
 const { response } = require("express");
-const userRouter = require("./routers/userRouter");
-const taskRouter = require("./routers/taskRouter");
+const userRouter = require("./routers/user");
+const taskRouter = require("./routers/task");
 require("./db/mongoose");
 
 app.use(express.json());

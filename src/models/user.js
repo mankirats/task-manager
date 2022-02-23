@@ -5,6 +5,7 @@ const userSchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
+        trim: true,
     },
     age: {
         type: Number,
@@ -14,7 +15,7 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
         minLength: 6,
-        trim: true,
+
         validate(value) {
             if (value.toLowerCase().includes("password")) {
                 throw new Error("Please use a strong password");
