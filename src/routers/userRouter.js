@@ -1,4 +1,5 @@
 const express = require("express");
+const { user } = require("fontawesome");
 const { models } = require("mongoose");
 const router = new express.Router();
 const User = require("../models/user");
@@ -79,14 +80,18 @@ router.post("/api/v1/user", async (req, res) => {
 
 // Update users using name
 router.patch("/api/v1/user/:id", async (req, res) => {
-    const objId = req.params.id;
+    const updates = Object.keys(req.body);
+    // const userKeys = ['name','age','']
     try {
-        const updateUser = await User.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true, runValidators: true }
-        );
-        if (!updateUser) {
+        const user = await User.findById(req.params.id);
+        updates.forEach((update) => (user[update] = req.body[update]));
+        await user.save();
+        // const updateUser = await User.findByIdAndUpdate(
+        //     req.params.id,
+        //     req.body,
+        //     { new: true, runValidators: true }
+        // );
+        if (!user) {
             return res.status(400).send({
                 status: 400,
                 data: "invalid user id",
@@ -94,12 +99,12 @@ router.patch("/api/v1/user/:id", async (req, res) => {
         }
         res.status(200).send({
             status: 200,
-            data: updateUser,
+            data: user,
         });
-    } catch (err) {
+    } catch (e) {
         res.status(400).send({
             status: 400,
-            data: err,
+            message: e,
         });
     }
 });
