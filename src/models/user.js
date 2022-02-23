@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const { use } = require("express/lib/application");
+
 const userSchema = mongoose.Schema({
     name: {
         type: String,
@@ -10,6 +10,19 @@ const userSchema = mongoose.Schema({
     age: {
         type: Number,
         default: null,
+    },
+    email: {
+        type: String,
+        unique: true,
+        trim: true,
+        lowercase: true,
+        unique: true,
+        required: "Email address is required",
+        // validate: [validateEmail, "Please fill a valid email address"],
+        match: [
+            /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+            "Please fill a valid email address",
+        ],
     },
     password: {
         type: String,
@@ -24,6 +37,22 @@ const userSchema = mongoose.Schema({
     },
 });
 
+userSchema.statics.findByCredentials = async (userEmail, userPassword) => {
+    const user = await User.findOne({ email: userEmail });
+
+    if (!user) {
+        throw new Error("Credentials provided are incorrect. Please try again");
+    }
+
+    const isMatch = await bcrypt.compare(userPassword, user.password);
+
+    if (!isMatch) {
+        throw new Error("Credentials provided are incorrect. Please try again");
+    }
+
+    return user;
+};
+
 userSchema.pre("save", async function (next) {
     const user = this;
     if (user.isModified("password")) {
@@ -35,3 +64,4 @@ userSchema.pre("save", async function (next) {
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
+// module.exports = findByCredentials;

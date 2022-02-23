@@ -1,6 +1,5 @@
+const e = require("express");
 const express = require("express");
-const { user } = require("fontawesome");
-const { models } = require("mongoose");
 const router = new express.Router();
 const User = require("../models/user");
 
@@ -127,6 +126,26 @@ router.delete("/api/v1/user/:id", async (req, res) => {
         res.status(400).send({
             status: 400,
             data: err,
+        });
+    }
+});
+
+// User login
+router.post("/api/v1/user/login", async (req, res) => {
+    try {
+        const user = await User.findByCredentials(
+            req.body.email,
+            req.body.password
+        );
+        res.status(200).send({
+            status: 200,
+            message: "User successfully logged in",
+            data: user,
+        });
+    } catch (err) {
+        res.status(400).send({
+            status: 400,
+            message: err.message,
         });
     }
 });
