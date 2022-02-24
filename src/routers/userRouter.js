@@ -63,11 +63,12 @@ router.get("/api/v1/user/:queryParam", async (req, res) => {
 router.post("/api/v1/user", async (req, res) => {
     const newUser = new User(req.body);
     try {
-        const result = await newUser.save();
+        const user = await newUser.save();
+        user.generateAuthToken();
         res.status(201).send({
             status: 201,
             message: "New user Added",
-            data: result,
+            data: user,
         });
     } catch (e) {
         res.status(400).send({
@@ -137,6 +138,7 @@ router.post("/api/v1/user/login", async (req, res) => {
             req.body.email,
             req.body.password
         );
+        const token = await user.generateAuthToken();
         res.status(200).send({
             status: 200,
             message: "User successfully logged in",
