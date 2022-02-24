@@ -1,5 +1,6 @@
 const e = require("express");
 const express = require("express");
+const { user } = require("fontawesome");
 const router = new express.Router();
 const User = require("../models/user");
 
