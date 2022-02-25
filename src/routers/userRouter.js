@@ -1,9 +1,7 @@
-const e = require("express");
 const express = require("express");
-const { user } = require("fontawesome");
 const router = new express.Router();
 const User = require("../models/user");
-
+const auth = require("../middleware/auth");
 // Get all users
 const listAndCount = async (collection) => {
     // throw new Error("mklmkl");
@@ -14,18 +12,20 @@ const listAndCount = async (collection) => {
     return (result = { allUsers, totalUsers });
 };
 
-router.get("/api/v1/user", async (req, res) => {
+router.get("/api/v1/user", auth, async (req, res) => {
+    res.send(req.user);
+});
+
+router.get("/api/v1/userprofile", auth, async (req, res) => {
     try {
-        await listAndCount(User);
         res.status(200).send({
             status: 200,
-            total_users: result["totalUsers"],
-            list_of_users: result["allUsers"],
+            data: req.user,
         });
     } catch (err) {
         res.status(400).send({
             status: 400,
-            message: err,
+            message: err.message,
         });
     }
 });
