@@ -12,8 +12,13 @@ const listAndCount = async (collection) => {
     return (result = { allUsers, totalUsers });
 };
 
-router.get("/api/v1/user", auth, async (req, res) => {
-    res.send(req.user);
+router.get("/api/v1/user", async (req, res) => {
+    const result = await listAndCount(User);
+    res.status(200).send({
+        status: 200,
+        total_users: result["totalUsers"],
+        list_of_users: result["allUsers"],
+    });
 });
 
 router.get("/api/v1/userprofile", auth, async (req, res) => {
