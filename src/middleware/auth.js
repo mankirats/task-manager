@@ -6,13 +6,12 @@ const auth = async (req, res, next) => {
         const token = req.header("Authorization").replace("Bearer ", "");
         const decodeToken = jwt.verify(token, "AS$%DF)(gh&^");
         const user = await User.findOne({
-            _id: decodeToken._id,
-            "tokens.token": token,
+            _id: decodeToken.id,
+            "tokens['token']": token,
         });
         if (!user) {
             throw new Error("Unable to Authenicate");
         }
-        // console.log(user);
         req.user = user;
         next();
     } catch (err) {
