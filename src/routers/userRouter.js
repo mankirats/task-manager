@@ -2,6 +2,7 @@ const express = require("express");
 const router = new express.Router();
 const User = require("../models/user");
 const auth = require("../middleware/auth");
+const { user } = require("fontawesome");
 // Get all users
 const listAndCount = async (collection) => {
     // throw new Error("mklmkl");
@@ -149,11 +150,31 @@ router.post("/api/v1/user/login", async (req, res) => {
             status: 200,
             message: "User successfully logged in",
             data: user,
+            generatedToken: token,
         });
     } catch (err) {
         res.status(400).send({
             status: 400,
             message: err.message,
+        });
+    }
+});
+
+// Logout user
+router.post("/api/v1/user/logout", auth, async (req, res) => {
+    try {
+        req.user.tokens = req.user.tokens.filter((userTokens) => {
+            userTokens != req.user.token;
+        });
+        await req.user.save();
+        res.status(200).send({
+            status: 200,
+            message: "User logged out successfully",
+        });
+    } catch (err) {
+        res.status(400).send({
+            status: 400,
+            message: "User authentication failed",
         });
     }
 });
