@@ -22,7 +22,7 @@ router.get("/api/v1/user", async (req, res) => {
     });
 });
 
-router.get("/api/v1/userprofile", auth, async (req, res) => {
+router.post("/api/v1/userprofile", auth, async (req, res) => {
     try {
         res.status(200).send({
             status: 200,
@@ -160,11 +160,11 @@ router.post("/api/v1/user/login", async (req, res) => {
     }
 });
 
-// Logout user
+// Logout user from single device
 router.post("/api/v1/user/logout", auth, async (req, res) => {
     try {
         req.user.tokens = req.user.tokens.filter((userTokens) => {
-            userTokens != req.user.token;
+            return userTokens.token !== req.token;
         });
         await req.user.save();
         res.status(200).send({
@@ -172,8 +172,24 @@ router.post("/api/v1/user/logout", auth, async (req, res) => {
             message: "User logged out successfully",
         });
     } catch (err) {
-        res.status(400).send({
-            status: 400,
+        res.status(500).send({
+            status: 500,
+            message: "User authentication failed",
+        });
+    }
+});
+
+router.post("/api/v1/user/allDevicesLogout", auth, async (req, res) => {
+    req.user.tokens.splice(0, req.user.tokens.length);
+    try {
+        await req.user.save();
+        res.status(200).send({
+            status: 200,
+            message: "User logged out successfully from all the devices",
+        });
+    } catch (err) {
+        res.status(500).send({
+            status: 500,
             message: "User authentication failed",
         });
     }
