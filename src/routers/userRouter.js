@@ -180,8 +180,8 @@ router.post("/api/v1/user/logout", auth, async (req, res) => {
 });
 
 router.post("/api/v1/user/allDevicesLogout", auth, async (req, res) => {
-    req.user.tokens.splice(0, req.user.tokens.length);
     try {
+        req.user.tokens.splice(0, req.user.tokens.length);
         await req.user.save();
         res.status(200).send({
             status: 200,
