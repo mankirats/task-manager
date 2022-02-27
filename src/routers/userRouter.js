@@ -60,8 +60,8 @@ router.post("/api/v1/user", async (req, res) => {
 // Update users using name
 router.patch("/api/v1/updateUser", auth, async (req, res) => {
     try {
+        const user = req.user;
         const updates = Object.keys(req.body);
-        const user = await User.findById(req.user._id);
         updates.forEach((update) => (user[update] = req.body[update]));
         await user.save();
         if (!user) {
