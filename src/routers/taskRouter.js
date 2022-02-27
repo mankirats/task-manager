@@ -1,7 +1,7 @@
 const express = require("express");
 const router = new express.Router();
 const Task = require("../models/task");
-
+const auth = require("../middleware/auth");
 // Get all users
 const listAndCount = async (collection) => {
     // throw new Error("mklmkl");
@@ -37,9 +37,11 @@ router.get("/api/v1/task/:tname", async (req, res) => {
 });
 
 // Create a Task
-router.post("/api/v1/task", async (req, res) => {
-    const newTask = new Task(req.body);
+router.post("/api/v1/task", auth, async (req, res) => {
     try {
+        const data = req.body;
+        const userId = req.user._id;
+        const newTask = new Task({ ...data, createdBy: userId });
         const result = await newTask.save();
         res.status(201).send({
             status: 201,
@@ -55,11 +57,12 @@ router.post("/api/v1/task", async (req, res) => {
 });
 
 // Update users using name
-router.patch("/api/v1/task/:id", async (req, res) => {
-    const objId = req.params.id;
+router.patch("/api/v1/updateTask/:id", auth, async (req, res) => {
     try {
-        const updateTask = await Task.findByIdAndUpdate(
-            { _id: req.params.id },
+        const taskId = req.params.id;
+        const userId = req.user._id;
+        const updateTask = await Task.findAndUpdate(
+            { _id: taskId, createdBy: userId },
             req.body,
             { new: true, runValidators: true }
         );
@@ -82,8 +85,10 @@ router.patch("/api/v1/task/:id", async (req, res) => {
 });
 
 // Delete Task
-router.delete("/api/v1/Task/:id", async (req, res) => {
+router.delete("/api/v1/Task/:id", auth, async (req, res) => {
     try {
+        const taskId = req.params.id;
+        const userId = req.user._id;
         const updateTask = await Task.findByIdAndDelete(req.params.id);
         if (!updateTask) {
             return res.status(400).send({
