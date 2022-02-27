@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { user } = require("fontawesome");
 // const auth = require("../middleware/auth");
 const userSchema = mongoose.Schema({
     name: {
@@ -14,10 +15,10 @@ const userSchema = mongoose.Schema({
     },
     email: {
         type: String,
-        unique: true,
         trim: true,
         lowercase: true,
         unique: true,
+        index: true,
         required: "Email address is required",
         // validate: [validateEmail, "Please fill a valid email address"],
         match: [
@@ -60,6 +61,15 @@ userSchema.statics.findByCredentials = async (userEmail, userPassword) => {
     }
 
     return user;
+};
+
+userSchema.methods.toJSON = function () {
+    const user = this;
+    const modUser = user.toObject();
+    delete modUser.password;
+    delete modUser.tokens;
+
+    return modUser;
 };
 
 userSchema.methods.generateAuthToken = async function () {
