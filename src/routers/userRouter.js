@@ -60,14 +60,10 @@ router.post("/api/v1/user", async (req, res) => {
 // Update users using name
 router.patch("/api/v1/updateUser", auth, async (req, res) => {
     try {
+        const updates = Object.keys(req.body);
         const user = await User.findById(req.user._id);
         updates.forEach((update) => (user[update] = req.body[update]));
         await user.save();
-        // const updateUser = await User.findByIdAndUpdate(
-        //     req.params.id,
-        //     req.body,
-        //     { new: true, runValidators: true }
-        // );
         if (!user) {
             return res.status(400).send({
                 status: 400,
@@ -81,7 +77,7 @@ router.patch("/api/v1/updateUser", auth, async (req, res) => {
     } catch (e) {
         res.status(400).send({
             status: 400,
-            message: e,
+            message: e.message,
         });
     }
 });
