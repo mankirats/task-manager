@@ -1,8 +1,8 @@
 const express = require("express");
 const router = new express.Router();
 const User = require("../models/user");
+const Task = require("../models/task");
 const auth = require("../middleware/auth");
-const { user } = require("fontawesome");
 // Get all users
 const listAndCount = async (collection) => {
     // throw new Error("mklmkl");
@@ -99,7 +99,7 @@ router.delete("/api/v1/deleteUser", auth, async (req, res) => {
     } catch (err) {
         res.status(400).send({
             status: 400,
-            data: err,
+            data: err.message,
         });
     }
 });
@@ -159,6 +159,12 @@ router.post("/api/v1/user/allDevicesLogout", auth, async (req, res) => {
             message: "User authentication failed",
         });
     }
+});
+
+router.post("/api/v1/listTasks", auth, async (req, res) => {
+    const user = req.user;
+    await user.populate("allTasks");
+    res.send(user.allTasks);
 });
 
 module.exports = router;
