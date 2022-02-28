@@ -61,7 +61,7 @@ router.patch("/api/v1/updateTask/:id", auth, async (req, res) => {
     try {
         const taskId = req.params.id;
         const userId = req.user._id;
-        const updateTask = await Task.findAndUpdate(
+        const updateTask = await Task.findByIdAndUpdate(
             { _id: taskId, createdBy: userId },
             req.body,
             { new: true, runValidators: true }
@@ -79,7 +79,7 @@ router.patch("/api/v1/updateTask/:id", auth, async (req, res) => {
     } catch (err) {
         res.status(400).send({
             status: 400,
-            message: err,
+            message: err.message,
         });
     }
 });
