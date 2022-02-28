@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { user } = require("fontawesome");
+const Task = require("./task");
 // const auth = require("../middleware/auth");
 const userSchema = mongoose.Schema({
     name: {
@@ -63,6 +63,12 @@ userSchema.statics.findByCredentials = async (userEmail, userPassword) => {
     return user;
 };
 
+userSchema.virtual("allTasks", {
+    ref: "Task",
+    localField: "_id",
+    foreignField: "createdBy",
+});
+
 userSchema.methods.toJSON = function () {
     const user = this;
     const modUser = user.toObject();
@@ -93,7 +99,12 @@ userSchema.pre("save", async function (next) {
     next();
 });
 
+userSchema.pre("deleteOne", { document: true }, async function (next) {
+    const user = this;
+    await Task.deleteMany({ createdBy: user._id });
+    next();
+});
+
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
-// module.exports = findByCredentials;
