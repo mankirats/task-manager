@@ -2,50 +2,55 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Task = require("./task");
+const res = require("express/lib/response");
+const { Timestamp } = require("mongodb");
 // const auth = require("../middleware/auth");
-const userSchema = mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    age: {
-        type: Number,
-        default: null,
-    },
-    email: {
-        type: String,
-        trim: true,
-        lowercase: true,
-        unique: true,
-        index: true,
-        required: "Email address is required",
-        // validate: [validateEmail, "Please fill a valid email address"],
-        match: [
-            /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-            "Please fill a valid email address",
-        ],
-    },
-    password: {
-        type: String,
-        required: true,
-        minLength: 6,
-
-        validate(value) {
-            if (value.toLowerCase().includes("password")) {
-                throw new Error("Please use a strong password");
-            }
+const userSchema = mongoose.Schema(
+    {
+        name: {
+            type: String,
+            required: true,
+            trim: true,
         },
-    },
-    tokens: [
-        {
-            token: {
-                type: String,
-                required: true,
+        age: {
+            type: Number,
+            default: null,
+        },
+        email: {
+            type: String,
+            trim: true,
+            lowercase: true,
+            unique: true,
+            index: true,
+            required: "Email address is required",
+            // validate: [validateEmail, "Please fill a valid email address"],
+            match: [
+                /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+                "Please fill a valid email address",
+            ],
+        },
+        password: {
+            type: String,
+            required: true,
+            minLength: 6,
+
+            validate(value) {
+                if (value.toLowerCase().includes("password")) {
+                    throw new Error("Please use a strong password");
+                }
             },
         },
-    ],
-});
+        tokens: [
+            {
+                token: {
+                    type: String,
+                    required: true,
+                },
+            },
+        ],
+    },
+    { timestamps: true }
+);
 
 userSchema.statics.findByCredentials = async (userEmail, userPassword) => {
     const user = await User.findOne({ email: userEmail });
@@ -99,9 +104,16 @@ userSchema.pre("save", async function (next) {
     next();
 });
 
-userSchema.pre("deleteOne", { document: true }, async function (next) {
+userSchema.pre("deleteOne", async function (next) {
     const user = this;
-    await Task.deleteMany({ createdBy: user._id });
+    try {
+        const userId = await User.findOne({ id: user._id });
+        const result = await Task.deleteMany({
+            createdBy: userId,
+        });
+    } catch (err) {
+        console.log(err.message);
+    }
     next();
 });
 
