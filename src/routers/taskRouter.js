@@ -11,6 +11,7 @@ router.get("/api/v1/task", async (req, res) => {
     }
     try {
         const allUsers = await Task.find(match)
+            .sort({ createdAt: -1 })
             .limit(parseInt(req.query.limit))
             .skip(parseInt(req.query.skip));
 
