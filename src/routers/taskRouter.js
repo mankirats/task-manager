@@ -2,24 +2,22 @@ const express = require("express");
 const router = new express.Router();
 const Task = require("../models/task");
 const auth = require("../middleware/auth");
-// Get all users
-const listAndCount = async (collection) => {
-    // throw new Error("mklmkl");
-    const allUsers = await collection.find({});
-
-    const totalUsers = await collection.countDocuments({});
-
-    return (result = { allUsers, totalUsers });
-};
 
 // Get All Tasks
 router.get("/api/v1/task", async (req, res) => {
-    const result = await listAndCount(Task);
-    res.status(200).send({
-        status: 200,
-        total_tasks: result["totalUsers"],
-        list_of_tasks: result["allUsers"],
-    });
+    try {
+        const allUsers = await Task.find({});
+
+        const totalUsers = await Task.countDocuments({});
+
+        res.status(200).send({
+            status: 200,
+            total_tasks: totalUsers,
+            list_of_tasks: allUsers,
+        });
+    } catch (err) {
+        res.status(400).send({ status: 400, message: err.message });
+    }
 });
 
 router.get("/api/v1/task/:tname", async (req, res) => {
@@ -32,7 +30,7 @@ router.get("/api/v1/task/:tname", async (req, res) => {
             data: result,
         });
     } catch (err) {
-        res.status(400).send({ status: 400, message: err });
+        res.status(400).send({ status: 400, message: err.message });
     }
 });
 
@@ -51,7 +49,7 @@ router.post("/api/v1/task", auth, async (req, res) => {
     } catch (e) {
         res.status(400).send({
             status: 400,
-            message: e,
+            message: e.message,
         });
     }
 });
@@ -103,7 +101,7 @@ router.delete("/api/v1/Task/:id", auth, async (req, res) => {
     } catch (err) {
         res.status(400).send({
             status: 400,
-            data: err,
+            data: err.message,
         });
     }
 });
