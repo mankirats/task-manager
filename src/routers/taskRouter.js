@@ -5,11 +5,14 @@ const auth = require("../middleware/auth");
 
 // Get All Tasks
 router.get("/api/v1/task", async (req, res) => {
+    const match = {};
+    if (req.query.completed) {
+        match.completed = req.query.completed === "true";
+    }
     try {
-        const allUsers = await Task.find({});
+        const allUsers = await Task.find(match);
 
-        const totalUsers = await Task.countDocuments({});
-
+        const totalUsers = allUsers.length;
         res.status(200).send({
             status: 200,
             total_tasks: totalUsers,
