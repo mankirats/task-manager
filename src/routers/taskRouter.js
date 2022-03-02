@@ -10,9 +10,11 @@ router.get("/api/v1/task", async (req, res) => {
         match.completed = req.query.completed === "true";
     }
     try {
-        const allUsers = await Task.find(match);
+        const allUsers = await Task.find(match)
+            .limit(parseInt(req.query.limit))
+            .skip(parseInt(req.query.skip));
 
-        const totalUsers = allUsers.length;
+        const totalUsers = await Task.countDocuments({});
         res.status(200).send({
             status: 200,
             total_tasks: totalUsers,
