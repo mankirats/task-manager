@@ -4,6 +4,8 @@ const User = require("../models/user");
 const Task = require("../models/task");
 const auth = require("../middleware/auth");
 const multer = require("multer");
+const res = require("express/lib/response");
+const { user } = require("fontawesome");
 const upload = multer({ dest: "uploads/", storage: multer.memoryStorage() });
 
 // Get all users
@@ -183,5 +185,25 @@ router.post(
         res.status(400).send(error.message);
     }
 );
+
+router.get("/api/v1/user/profilePic", async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: "6220f65a2e2b6471b7f0b324" });
+        if (!user) {
+            console.log("user");
+            throw new Error("No user");
+        }
+        if (!user.avatar) {
+            console.log("pic");
+            throw new Error("No Avatar");
+        }
+
+        res.set("Content-Type", "image/jpg");
+        res.send(user.avatar);
+        // res.send(user);
+    } catch (err) {
+        res.send(err.message);
+    }
+});
 
 module.exports = router;
