@@ -3,6 +3,9 @@ const router = new express.Router();
 const User = require("../models/user");
 const Task = require("../models/task");
 const auth = require("../middleware/auth");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/", storage: multer.memoryStorage() });
+
 // Get all users
 const listAndCount = async (collection) => {
     // throw new Error("mklmkl");
@@ -166,5 +169,19 @@ router.post("/api/v1/listTasks", auth, async (req, res) => {
     await user.populate("allTasks");
     res.send(user.allTasks);
 });
+
+router.post(
+    "/api/v1/user/addProfilePic",
+    auth,
+    upload.single("profilePic"),
+    async (req, res) => {
+        req.user.avatar = req.file.buffer;
+        await req.user.save();
+        res.send(req.user);
+    },
+    (error, req, res, next) => {
+        res.status(400).send(error.message);
+    }
+);
 
 module.exports = router;
