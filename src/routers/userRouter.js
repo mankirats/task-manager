@@ -4,7 +4,6 @@ const User = require("../models/user");
 const Task = require("../models/task");
 const auth = require("../middleware/auth");
 const multer = require("multer");
-const res = require("express/lib/response");
 const upload = multer({ dest: "uploads/", storage: multer.memoryStorage() });
 
 // Get all users
