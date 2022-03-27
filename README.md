@@ -1,4 +1,4 @@
-# Contacts List App
+# Task Manager App
 
 ## Backend application with folllowing functionalities:
 - Sign In 
